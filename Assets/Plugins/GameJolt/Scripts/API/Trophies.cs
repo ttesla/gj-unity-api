@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,14 +26,28 @@ namespace GameJolt.API
 			parameters.Add("trophy_id", id.ToString());
 
 			Core.Request.Get(Constants.API_TROPHIES_ADD, parameters, (Core.Response response) => {
-				// Update the cache.
-				if (cachedTrophies != null && cachedTrophies.ContainsKey(id) && !cachedTrophies[id].Unlocked)
+				
+                bool needToShowNotif = true;
+                
+                // Update the cache.
+				if (cachedTrophies != null && cachedTrophies.ContainsKey(id))
 				{
-					cachedTrophies[id].Unlocked = response.success;
+                    if (!cachedTrophies[id].Unlocked)
+                    {
+                        cachedTrophies[id].Unlocked = response.success;
+                    }
+                    else
+                    {
+                        // Already unlocked don't show!
+                        needToShowNotif = true;
+                    }
 				}
 
-				// Show the notification
-				PrepareNotification(id);
+                // Show the notification
+                if (needToShowNotif)
+                {
+                    PrepareNotification(id);
+                }
 
 				if (callback != null)
 				{
@@ -75,7 +89,7 @@ namespace GameJolt.API
 			if (trophy.Unlocked)
 			{
 				GameJolt.UI.Manager.Instance.QueueNotification(
-					string.Format("Unlocked <b>#{0}</b>", trophy.Title),
+                    string.Format("Unlocked <b><color=#CCFF00FF>{0}</color></b>", trophy.Title),
 					trophy.Image);
 			}
 		}
