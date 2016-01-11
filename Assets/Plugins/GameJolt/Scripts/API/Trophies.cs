@@ -39,7 +39,7 @@ namespace GameJolt.API
                     else
                     {
                         // Already unlocked don't show!
-                        needToShowNotif = true;
+                        needToShowNotif = false;
                     }
 				}
 
